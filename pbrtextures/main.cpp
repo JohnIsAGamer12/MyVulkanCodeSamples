@@ -29,7 +29,7 @@ int main()
 	if (+win.Create(0, 0, 800, 600, GWindowStyle::WINDOWEDBORDERED))
 	{
 		// win.SetIcon(16, 16, nullptr);
-		win.SetWindowName("Jonathan Rivero Lab 7 - Part Four Complete");
+		win.SetWindowName("Jonathan Rivero - Vulkan - pbrtextures");
 		VkClearValue clrAndDepth[2];
 		clrAndDepth[0].color = { {0, 0.3f, 0.3f, 1} };
 		clrAndDepth[1].depthStencil = { 0, 0u };
@@ -42,7 +42,7 @@ int main()
 #ifndef NDEBUG
 		const char* debugLayers[] = {
 			"VK_LAYER_KHRONOS_validation", // standard validation layer
-			//"VK_LAYER_RENDERDOC_Capture" // add this if you have installed RenderDoc
+			// "VK_LAYER_RENDERDOC_Capture" // add this if you have installed RenderDoc
 		};
 		if (+vulkan.Create(win, GW::GRAPHICS::DEPTH_BUFFER_SUPPORT | GW::GRAPHICS::BINDLESS_SUPPORT,
 			sizeof(debugLayers) / sizeof(debugLayers[0]),
