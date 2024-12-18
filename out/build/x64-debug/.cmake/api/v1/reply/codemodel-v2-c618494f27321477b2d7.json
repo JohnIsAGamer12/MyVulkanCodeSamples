@@ -1,0 +1,115 @@
+{
+	"configurations" : 
+	[
+		{
+			"directories" : 
+			[
+				{
+					"build" : ".",
+					"childIndexes" : 
+					[
+						1,
+						2
+					],
+					"jsonFile" : "directory-.-Debug-d0094a50bb2071803777.json",
+					"minimumCMakeVersion" : 
+					{
+						"string" : "3.8"
+					},
+					"projectIndex" : 0,
+					"source" : "."
+				},
+				{
+					"build" : "MyVulkanCodeSamples",
+					"jsonFile" : "directory-MyVulkanCodeSamples-Debug-81f538cd20f1df5fb6ee.json",
+					"minimumCMakeVersion" : 
+					{
+						"string" : "3.8"
+					},
+					"parentIndex" : 0,
+					"projectIndex" : 0,
+					"source" : "MyVulkanCodeSamples",
+					"targetIndexes" : 
+					[
+						0
+					]
+				},
+				{
+					"build" : "starfield",
+					"jsonFile" : "directory-starfield-Debug-fbfbb6d0a8ba579fbe21.json",
+					"minimumCMakeVersion" : 
+					{
+						"string" : "3.2"
+					},
+					"parentIndex" : 0,
+					"projectIndex" : 1,
+					"source" : "starfield",
+					"targetIndexes" : 
+					[
+						1
+					]
+				}
+			],
+			"name" : "Debug",
+			"projects" : 
+			[
+				{
+					"childIndexes" : 
+					[
+						1
+					],
+					"directoryIndexes" : 
+					[
+						0,
+						1
+					],
+					"name" : "MyVulkanCodeSamples",
+					"targetIndexes" : 
+					[
+						0
+					]
+				},
+				{
+					"directoryIndexes" : 
+					[
+						2
+					],
+					"name" : "starfield",
+					"parentIndex" : 0,
+					"targetIndexes" : 
+					[
+						1
+					]
+				}
+			],
+			"targets" : 
+			[
+				{
+					"directoryIndex" : 1,
+					"id" : "MyVulkanCodeSamples::@7e601be8d37188f1b54f",
+					"jsonFile" : "target-MyVulkanCodeSamples-Debug-e1ed929b9567abeac531.json",
+					"name" : "MyVulkanCodeSamples",
+					"projectIndex" : 0
+				},
+				{
+					"directoryIndex" : 2,
+					"id" : "starfield::@0651937a13e3e68b0df5",
+					"jsonFile" : "target-starfield-Debug-7fca0b9d34d45e97fd36.json",
+					"name" : "starfield",
+					"projectIndex" : 1
+				}
+			]
+		}
+	],
+	"kind" : "codemodel",
+	"paths" : 
+	{
+		"build" : "C:/Users/Jonathan Rivero/Documents/GitHub/MyVulkanCodeSamples/out/build/x64-debug",
+		"source" : "C:/Users/Jonathan Rivero/Documents/GitHub/MyVulkanCodeSamples"
+	},
+	"version" : 
+	{
+		"major" : 2,
+		"minor" : 7
+	}
+}

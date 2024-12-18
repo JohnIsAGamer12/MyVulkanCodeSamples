@@ -1,0 +1,6 @@
+# ninja log v6
+4	53	7561860090181220	C:/Users/Jonathan Rivero/Documents/GitHub/MyVulkanCodeSamples/out/build/x64-debug/CMakeFiles/cmake.verify_globs	ce908b04910fe59b
+54	582	7561860090669411	MyVulkanCodeSamples/CMakeFiles/MyVulkanCodeSamples.dir/MyVulkanCodeSamples.cpp.obj	837f9fd9c83a63e5
+582	860	7561860095964475	MyVulkanCodeSamples/MyVulkanCodeSamples.exe	d7989a77f408a702
+58	1775	7561860090717754	starfield/CMakeFiles/starfield.dir/main.cpp.obj	406c42896fec7667
+1793	2624	7561860108063809	starfield/starfield.exe	39fdc2b440288227

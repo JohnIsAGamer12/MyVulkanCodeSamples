@@ -1,0 +1,1 @@
+To build this project double-click "CreateSolution.bat"

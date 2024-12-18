@@ -1,0 +1,8 @@
+C:/Users/Jonathan Rivero/Documents/GitHub/MyVulkanCodeSamples/out/build/x64-debug/CMakeFiles/edit_cache.dir
+C:/Users/Jonathan Rivero/Documents/GitHub/MyVulkanCodeSamples/out/build/x64-debug/CMakeFiles/rebuild_cache.dir
+C:/Users/Jonathan Rivero/Documents/GitHub/MyVulkanCodeSamples/out/build/x64-debug/MyVulkanCodeSamples/CMakeFiles/MyVulkanCodeSamples.dir
+C:/Users/Jonathan Rivero/Documents/GitHub/MyVulkanCodeSamples/out/build/x64-debug/MyVulkanCodeSamples/CMakeFiles/edit_cache.dir
+C:/Users/Jonathan Rivero/Documents/GitHub/MyVulkanCodeSamples/out/build/x64-debug/MyVulkanCodeSamples/CMakeFiles/rebuild_cache.dir
+C:/Users/Jonathan Rivero/Documents/GitHub/MyVulkanCodeSamples/out/build/x64-debug/starfield/CMakeFiles/starfield.dir
+C:/Users/Jonathan Rivero/Documents/GitHub/MyVulkanCodeSamples/out/build/x64-debug/starfield/CMakeFiles/edit_cache.dir
+C:/Users/Jonathan Rivero/Documents/GitHub/MyVulkanCodeSamples/out/build/x64-debug/starfield/CMakeFiles/rebuild_cache.dir
