@@ -617,7 +617,7 @@ public:
 		VkCommandBuffer commandBuffer = GetCurrentCommandBuffer();
 		SetUpPipeline(commandBuffer);
 
-		vkCmdDraw(commandBuffer, 13, 1, 0, 0); // TODO: Part 1b, Part 1c
+		vkCmdDraw(commandBuffer, 13, 1, 0, 0);
 
 		vkCmdBindPipeline(commandBuffer, VK_PIPELINE_BIND_POINT_GRAPHICS, pipelineTwo);
 
@@ -675,12 +675,9 @@ private:
 		vkDestroyShaderModule(device, fragmentShader, nullptr);
 		vkDestroyPipelineLayout(device, pipelineLayout, nullptr);
 		vkDestroyPipeline(device, pipeline, nullptr);
-
 		vkDestroyPipeline(device, pipelineTwo, nullptr);
-
 		vkDestroyBuffer(device, indexHandle, nullptr);
 		vkFreeMemory(device, indexData, nullptr);
-
 		vkDestroyShaderModule(device, vertexShaderTwo, nullptr);
 		vkDestroyShaderModule(device, fragmentShaderTwo, nullptr);
 	}

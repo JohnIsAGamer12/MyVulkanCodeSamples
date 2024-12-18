@@ -9,9 +9,7 @@
 #define GATEWARE_DISABLE_GRASTERSURFACE // we have another template for this
 #define GATEWARE_DISABLE_GOPENGLSURFACE // we have another template for this
 
-// TODO: Part 2a
 #define GATEWARE_ENABLE_MATH
-// TODO: Part 4a
 #define GATEWARE_ENABLE_INPUT
 
 // With what we want & what we don't defined we can include the API
@@ -32,19 +30,18 @@ int main()
 	GEventResponder msgs;
 	GVulkanSurface vulkan;
 
-	if (+win.Create(0, 0, 800, 600, GWindowStyle::WINDOWEDBORDERED))
+	if (+win.Create(0, 0, 1280, 720, GWindowStyle::WINDOWEDBORDERED))
 	{
-		// TODO: Part 1a
-		win.SetWindowName("Jonathan Rivero - Lab 3 - Part Four Complete");
+		win.SetWindowName("Jonathan Rivero - Vulkan - uniform_buffers");
 		VkClearValue clrAndDepth[2];
-		clrAndDepth[0].color = { {0.24f, 0.16f, 0.16f, 1} }; // TODO: Part 1a (optional)
+		clrAndDepth[0].color = { {0.24f, 0.16f, 0.16f, 1} };
 		clrAndDepth[1].depthStencil = { 1.0f, 0u };
-		msgs.Create([&](const GW::GEvent& e) {
-			GW::SYSTEM::GWindow::Events q;
-			if (+e.Read(q) && q == GWindow::Events::RESIZE)
-				clrAndDepth[0].color.float32[2] += 0.0f; 
-			});
-		win.Register(msgs);
+		//msgs.Create([&](const GW::GEvent& e) {
+		//	GW::SYSTEM::GWindow::Events q;
+		//	if (+e.Read(q) && q == GWindow::Events::RESIZE)
+		//		clrAndDepth[0].color.float32[2] += 0.0f; 
+		//	});
+		//win.Register(msgs);
 #ifndef NDEBUG
 		const char* debugLayers[] = {
 			"VK_LAYER_KHRONOS_validation", // standard validation layer
@@ -61,7 +58,6 @@ int main()
 			{
 				if (+vulkan.StartFrame(2, clrAndDepth))
 				{
-					// TODO: Part 4b
 					renderer.UpdateCamera();
 
 					renderer.Render();

@@ -247,11 +247,12 @@ private:
 		shaderc_compiler_t compiler = shaderc_compiler_initialize();
 		shaderc_compile_options_t options = CreateCompileOptions();
 
-		CompileVertexShader(compiler, options, vertexShader, "VertexShader.hlsl");
-		CompileFragmentShader(compiler, options, fragmentShader, "FragmentShader.hlsl");
 
-		CompileVertexShader(compiler, options, vertexShaderTwo, "VertexShader2.hlsl");
-		CompileFragmentShader(compiler, options, fragmentShaderTwo, "FragmentShader2.hlsl");
+		CompileVertexShader(compiler, options, vertexShader, "../../starfield/VertexShader.hlsl");
+		CompileFragmentShader(compiler, options, fragmentShader, "../../starfield/FragmentShader.hlsl");
+
+		CompileVertexShader(compiler, options, vertexShaderTwo, "../../starfield/VertexShader2.hlsl");
+		CompileFragmentShader(compiler, options, fragmentShaderTwo, "../../starfield/FragmentShader2.hlsl");
 
 		// Free runtime shader compiler resources
 		shaderc_compile_options_release(options);

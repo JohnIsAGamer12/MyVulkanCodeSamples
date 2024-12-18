@@ -26,17 +26,10 @@ int main()
 	GVulkanSurface vulkan;
 	if (+win.Create(0, 0, 800, 600, GWindowStyle::WINDOWEDBORDERED))
 	{
-		// TODO: Part 1a
-		win.SetWindowName("Jonathan Rivero - Lab 2 - Part Four Complete");
+		win.SetWindowName("Jonathan Rivero - Vulkan - push_constants & multiple pipelines");
 		VkClearValue clrAndDepth[2];
-		clrAndDepth[0].color = { { 0.25f, 0.25f, 0.25f, 1} }; // TODO: Part 1a (optional)
+		clrAndDepth[0].color = { { 0.25f, 0.25f, 0.25f, 1} };
 		clrAndDepth[1].depthStencil = { 1.0f, 0u };
-		msgs.Create([&](const GW::GEvent& g) {
-			GW::SYSTEM::GWindow::Events q;
-			if (+g.Read(q) && q == GW::SYSTEM::GWindow::Events::RESIZE)
-				clrAndDepth[0].color.float32[2] += 0.0f; // don't
-			});
-		win.Register(msgs);
 #ifndef NDEBUG
 		const char* debugLayers[] = {
 			"VK_LAYER_KHRONOS_validation", // standard validation layer

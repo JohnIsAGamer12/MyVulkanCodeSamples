@@ -305,7 +305,9 @@ public:
 		unsigned int screen_width;
 		win.GetClientWidth(screen_width);
 
-		double ar = (screen_width / static_cast<float>(screen_height));
+		float ar = 0.f;
+		vlk.GetAspectRatio(ar);
+
 		double total_yaw = fov * ar * mouse_x_delta / screen_width + r_stick_x_axis * Thumb_Speed;
 
 		GW::MATH::GMATRIXF yawMatrix;
@@ -317,6 +319,10 @@ public:
 		GW::MATH::GMatrix::InverseF(cameraMatrix, viewMatrix);
 		shaderVars.viewMatrix = viewMatrix;
 		shaderVars.camPos = cameraMatrix.row4;
+
+		// Updating the Projection Matrix to adjust to the changed in the size of the window
+		projectionMatrix = CreateProjectionMatrix(65.f, ar, 10000.f, 0.00001f);
+		shaderVars.projectionMatrix = projectionMatrix;
 	}
 
 private:

@@ -33,12 +33,6 @@ int main()
 		VkClearValue clrAndDepth[2];
 		clrAndDepth[0].color = { {0, 0.3f, 0.3f, 1} };
 		clrAndDepth[1].depthStencil = { 0, 0u };
-		//msgs.Create([&](const GW::GEvent& e) {
-		//	GW::SYSTEM::GWindow::Events q;
-		//	if (+e.Read(q) && q == GWindow::Events::RESIZE)
-		//		clrAndDepth[0].color.float32[2] += 0.01f; // disable
-		//	});
-		//win.Register(msgs);
 #ifndef NDEBUG
 		const char* debugLayers[] = {
 			"VK_LAYER_KHRONOS_validation", // standard validation layer

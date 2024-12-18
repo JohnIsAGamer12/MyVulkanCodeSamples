@@ -797,6 +797,8 @@ public:
 
 		matrixMath.InverseF(cameraMatrix, viewMatrix);
 		shaderVars.viewMatrix = viewMatrix;
+
+		CreateProjectionMatrix();
 	}
 
 private:

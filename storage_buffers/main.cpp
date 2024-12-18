@@ -2,7 +2,7 @@
 #define GATEWARE_ENABLE_CORE // All libraries need this
 #define GATEWARE_ENABLE_SYSTEM // Graphics libs require system level libraries
 #define GATEWARE_ENABLE_GRAPHICS // Enables all Graphics Libraries
-// TODO: Part 3a
+
 // Ignore some GRAPHICS libraries we aren't going to use
 #define GATEWARE_DISABLE_GDIRECTX11SURFACE // we have another template for this
 #define GATEWARE_DISABLE_GDIRECTX12SURFACE // we have another template for this
@@ -26,19 +26,12 @@ int main()
 	GWindow win;
 	GEventResponder msgs;
 	GVulkanSurface vulkan;
-	if (+win.Create(0, 0, 800, 600, GWindowStyle::WINDOWEDBORDERED))
+	if (+win.Create(0, 0, 1280, 720, GWindowStyle::WINDOWEDBORDERED))
 	{
-		// TODO: Part 1a
-		win.SetWindowName("Jonathan Rivero Lab Four - Part Four Complete");
+		win.SetWindowName("Jonathan Rivero - Vulkan - storage_buffers");
 		VkClearValue clrAndDepth[2];
 		clrAndDepth[0].color = { {0.4f, 0.4f, 0.4f, 1} };
 		clrAndDepth[1].depthStencil = { 1.0f, 0u };
-		//msgs.Create([&](const GW::GEvent& e) {
-		//	GW::SYSTEM::GWindow::Events q;
-		//	if (+e.Read(q) && q == GWindow::Events::RESIZE)
-		//		clrAndDepth[0].color.float32[2] += 0.01f; // disable
-		//	});
-		//win.Register(msgs);
 #ifndef NDEBUG
 		const char* debugLayers[] = {
 			"VK_LAYER_KHRONOS_validation", // standard validation layer
@@ -56,6 +49,9 @@ int main()
 			{
 				if (+vulkan.StartFrame(2, clrAndDepth))
 				{
+					// Update Aspect Ratio by Re-Creating the Projection Matrix
+					renderer.CreateProjectionMatrix();
+
 					renderer.Render();
 					vulkan.EndFrame(true);
 				}

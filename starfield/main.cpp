@@ -24,15 +24,8 @@ int main()
 	GVulkanSurface vulkan;
 	if (+win.Create(0, 0, 800, 600, GWindowStyle::WINDOWEDBORDERED))
 	{
-		// TODO: Part 1a
-		win.SetWindowName("Jonathan Rivero - Lab 1 - Part Four Complete");
-        VkClearColorValue clr = { {0, 0, 0, 1} };// TODO: Part 1a
-		//msgs.Create([&](const GW::GEvent& g) {
-		//	GW::SYSTEM::GWindow::Events q;
-		//	if (+g.Read(q) && q == GWindow::Events::RESIZE)
-		//		clr.float32[2] += 0.0f;// TODO: Part 1a
-		//	});
-		//win.Register(msgs);
+		win.SetWindowName("Jonathan Rivero - Vulkan - 2D Starfield");
+        VkClearColorValue clr = { {0, 0, 0, 1} };
 #ifndef NDEBUG
 		const char* debugLayers[] = {
 			"VK_LAYER_KHRONOS_validation", // standard validation layer

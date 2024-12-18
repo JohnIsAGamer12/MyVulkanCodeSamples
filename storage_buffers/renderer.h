@@ -1,4 +1,3 @@
-// TODO: Part 1b
 #include "shaderc/shaderc.h" // needed for compiling shaders at runtime
 #ifdef _WIN32 // must use MT platform DLL libraries on windows
 #pragma comment(lib, "shaderc_combined.lib") 
@@ -13,13 +12,10 @@ void PrintLabeledDebugString(const char* label, const char* toPrint)
 #endif
 }
 
-// TODO: Part 2b
 #include "FSLogo.h"
 
 class Renderer
 {
-	// TODO: Part 3a
-
 	// proxy handles
 	GW::SYSTEM::GWindow win;
 	GW::GRAPHICS::GVulkanSurface vlk;
@@ -31,36 +27,35 @@ class Renderer
 	VkRenderPass renderPass;
 	VkBuffer vertexHandle = nullptr;
 	VkDeviceMemory vertexData = nullptr;
-	// TODO: Part 1g
+
 	VkBuffer indexHandle = nullptr;
 	VkDeviceMemory indexData = nullptr;
-	// TODO: Part 2c
+
 	VkShaderModule vertexShader = nullptr;
 	VkShaderModule fragmentShader = nullptr;
 	// pipeline settings for drawing (also required)
 	VkPipeline pipeline = nullptr;
 	VkPipelineLayout pipelineLayout = nullptr;
-	// TODO: Part 2d
+
 	std::vector<VkBuffer> uniformHandle;
 	std::vector<VkDeviceMemory> uniformData;
 	std::vector<VkDescriptorSet> descriptor_set;
 
 	VkDescriptorSetLayout descriptor_set_layout;
 	VkDescriptorPool descriptor_pool;
-	// TODO: Part 3d
+
 	std::vector<VkBuffer> storageHandle;
 	std::vector<VkDeviceMemory> storageData;
 
 	unsigned int windowWidth, windowHeight;
 
-	// TODO: Part 2a
 	GW::MATH::GMATRIXF viewMatrix;
 	GW::MATH::GMATRIXF projectionMatrix;
 
 	GW::MATH::GVECTORF lightDirection;
 	GW::MATH::GVECTORF lightColor;
 	GW::MATH::GVECTORF lightAmbient;
-	// TODO: Part 2b // TODO: Part 4d
+
 	struct SHADER_SCENE_DATA
 	{
 		GW::MATH::GVECTORF lightDirection, lightAmbient, lightColor, cameraPos;
@@ -68,7 +63,7 @@ class Renderer
 	} shaderSceneData;
 
 	unsigned int maxFrames = 0;
-	// TODO: Part 3a
+
 	struct INSTANCE_DATA
 	{
 		GW::MATH::GMATRIXF worldMatrix;
@@ -86,23 +81,11 @@ public:
 		vlk = _vlk;
 		UpdateWindowDimensions();
 
-		// TODO: Part 2a
-		float aR;
-		vlk.GetAspectRatio(aR);
+		CreateViewMatrix();
+		CreateProjectionMatrix();
+		
+		SetupDirectionalLight();
 
-		GW::MATH::GMatrix::LookAtLHF(GW::MATH::GVECTORF{ 0.75f, 0.25f, -1.5f }, GW::MATH::GVECTORF{ 0.15f, 0.75f, 0.f }, GW::MATH::GVECTORF{ 0, 1, 0 }, viewMatrix);
-		GW::MATH::GMatrix::ProjectionVulkanLHF((65.f * G_PI) / 180.f, aR, 0.1f, 100.f, projectionMatrix);
-		lightDirection = { -1.f, -1.f, 2.f };
-		lightColor = { 0.9f, 0.9f, 1.f, 1.f };
-		lightAmbient = { 0.25f, 0.25f, 0.35f };
-		// TODO: Part 2b // TODO: Part 4d
-		shaderSceneData.viewMatrix = viewMatrix;
-		shaderSceneData.projectionMatrix = projectionMatrix;
-		shaderSceneData.lightDirection = lightDirection;
-		shaderSceneData.lightColor = lightColor;
-		shaderSceneData.lightAmbient = lightAmbient;
-		shaderSceneData.cameraPos = { 0.75f, 0.25f, -1.5f };
-		// TODO: part 3a
 		perFrame.resize(FSLogo_meshcount);
 		for (int i = 0; i < perFrame.size(); i++)
 		{
@@ -112,6 +95,36 @@ public:
 
 		InitializeGraphics();
 		BindShutdownCallback();
+	}
+
+	void CreateViewMatrix()
+	{
+		GW::MATH::GMatrix::LookAtLHF(
+			GW::MATH::GVECTORF{ 0.75f, 0.25f, -1.5f },
+			GW::MATH::GVECTORF{ 0.15f, 0.75f, 0.f },
+			GW::MATH::GVECTORF{ 0, 1, 0 }, viewMatrix
+		);
+		shaderSceneData.viewMatrix = viewMatrix;
+		shaderSceneData.cameraPos = { 0.75f, 0.25f, -1.5f };
+	}
+
+	void SetupDirectionalLight()
+	{
+		lightDirection = { -1.f, -1.f, 2.f };
+		lightColor = { 0.9f, 0.9f, 1.f, 1.f };
+		lightAmbient = { 0.25f, 0.25f, 0.35f };
+
+		shaderSceneData.lightDirection = lightDirection;
+		shaderSceneData.lightColor = lightColor;
+		shaderSceneData.lightAmbient = lightAmbient;
+	}
+
+	void CreateProjectionMatrix()
+	{
+		float aR;
+		vlk.GetAspectRatio(aR);
+		GW::MATH::GMatrix::ProjectionVulkanLHF((65.f * G_PI) / 180.f, aR, 0.1f, 100.f, projectionMatrix);
+		shaderSceneData.projectionMatrix = projectionMatrix;
 	}
 
 private:
@@ -124,11 +137,16 @@ private:
 	void InitializeGraphics()
 	{
 		GetHandlesFromSurface();
-		InitializeVertexBuffer();
-		// TODO: Part 1g
-		InitializeIndexBuffer();
-		// TODO: Part 2d // TODO: Part 3d
+		InitializeVertexIndexBuffer();
 
+		SetupDescriptorsets();
+
+		CompileShaders();
+		InitializeGraphicsPipeline();
+	}
+
+	void SetupDescriptorsets()
+	{
 		vlk.GetSwapchainImageCount(maxFrames);
 
 		uniformHandle.resize(maxFrames);
@@ -200,7 +218,7 @@ private:
 			vkAllocateDescriptorSets(device, &descriptor_set_allocateinfo, &descriptor_set[i]);
 
 			descriptor_uniform_buffer_info[i].buffer = uniformHandle[i];
-			descriptor_uniform_buffer_info[i].range = sizeof(SHADER_SCENE_DATA);
+			descriptor_uniform_buffer_info[i].range = VK_WHOLE_SIZE;
 
 			VkWriteDescriptorSet write_descriptorset[2] = {};
 			write_descriptorset[0].sType = VK_STRUCTURE_TYPE_WRITE_DESCRIPTOR_SET;
@@ -212,7 +230,7 @@ private:
 
 
 			descriptor_storage_buffer_info[i].buffer = storageHandle[i];
-			descriptor_storage_buffer_info[i].range = sizeof(INSTANCE_DATA) * 2;
+			descriptor_storage_buffer_info[i].range = VK_WHOLE_SIZE;
 
 			write_descriptorset[1].sType = VK_STRUCTURE_TYPE_WRITE_DESCRIPTOR_SET;
 			write_descriptorset[1].dstBinding = 1;
@@ -224,9 +242,6 @@ private:
 
 			vkUpdateDescriptorSets(device, 2, &write_descriptorset[0], 0, nullptr);
 		}
-
-		CompileShaders();
-		InitializeGraphicsPipeline();
 	}
 
 	void GetHandlesFromSurface()
@@ -236,21 +251,9 @@ private:
 		vlk.GetRenderPass((void**)&renderPass);
 	}
 
-	void InitializeVertexBuffer()
+	void InitializeVertexIndexBuffer()
 	{
-		// TODO: Part 1c
-		//float verts[] =
-		//{
-		//	0,   0.5f,
-		//	0.5f, -0.5f,
-		//	-0.5f, -0.5f
-		//};
-
 		CreateVertexBuffer(&FSLogo_vertices[0], sizeof(FSLogo_vertices));
-	}
-
-	void InitializeIndexBuffer()
-	{
 		CreateIndexBuffer(&FSLogo_indices[0], sizeof(FSLogo_indices));
 	}
 
@@ -290,7 +293,7 @@ private:
 	{
 		shaderc_compile_options_t retval = shaderc_compile_options_initialize();
 		shaderc_compile_options_set_source_language(retval, shaderc_source_language_hlsl);
-		shaderc_compile_options_set_invert_y(retval, false); // TODO: Part 2g
+		shaderc_compile_options_set_invert_y(retval, false);
 #ifndef NDEBUG
 		shaderc_compile_options_set_generate_debug_info(retval);
 #endif
@@ -431,7 +434,6 @@ private:
 
 	VkVertexInputBindingDescription CreateVkVertexInputBindingDescription()
 	{
-		// TODO: Part 1e
 		VkVertexInputBindingDescription retval = {};
 		retval.binding = 0;
 		retval.stride = sizeof(OBJ_VERT);
@@ -570,7 +572,6 @@ private:
 	void CreatePipelineLayout()
 	{
 		// Descriptor pipeline layout
-		// TODO: Part 2d // TODO: Part 3d
 		VkPipelineLayoutCreateInfo pipeline_layout_create_info = {};
 		pipeline_layout_create_info.sType = VK_STRUCTURE_TYPE_PIPELINE_LAYOUT_CREATE_INFO;
 		pipeline_layout_create_info.setLayoutCount = 1;
@@ -595,34 +596,30 @@ private:
 public:
 	void Render()
 	{
-		// TODO: Part 3i
 		GW::MATH::GMATRIXF RotateYMatrix;
 		GW::MATH::GMatrix::RotateYLocalF(GW::MATH::GIdentityMatrixF, 0.0001f, RotateYMatrix);
 		GW::MATH::GMatrix::MultiplyMatrixF(RotateYMatrix, fSLogoMatrix, fSLogoMatrix);
 		perFrame[1].worldMatrix = fSLogoMatrix;
+
 		for (size_t i = 0; i < 2; i++)
 		{
 			GvkHelper::write_to_buffer(device, storageData[i], perFrame.data(), sizeof(INSTANCE_DATA) * 2);
+			// Update the shader scene data with the new projection matrices
+			GvkHelper::write_to_buffer(device, uniformData[i], &shaderSceneData, sizeof(SHADER_SCENE_DATA));
 		}
 
-		// TODO: Part 2a
 		VkCommandBuffer commandBuffer = GetCurrentCommandBuffer();
 		SetUpPipeline(commandBuffer);
-		// TODO: Part 3i
-		// TODO: Part 1h
 		vkCmdBindIndexBuffer(commandBuffer, indexHandle, 0, VK_INDEX_TYPE_UINT32);
 		for (int i = 0; i < static_cast<uint32_t>(maxFrames); i++)
 		{
-			// TODO: Part 2e
 			vkCmdBindDescriptorSets(commandBuffer, VK_PIPELINE_BIND_POINT_GRAPHICS, pipelineLayout, 0, 1, &descriptor_set[i], 0, nullptr);
 		}
-		// TODO: Part 3f
 
 		for (size_t i = 0; i < ARRAYSIZE(FSLogo_meshes); i++)
 		{
-			vkCmdDrawIndexed(commandBuffer, FSLogo_meshes[i].indexCount, 1, FSLogo_meshes[i].indexOffset, 0, i); // TODO: Part 1d 
+			vkCmdDrawIndexed(commandBuffer, FSLogo_meshes[i].indexCount, 1, FSLogo_meshes[i].indexOffset, 0, i);
 		}
-
 	}
 
 private:
@@ -670,19 +667,15 @@ private:
 		// wait till everything has completed
 		vkDeviceWaitIdle(device);
 		// Release allocated buffers, shaders & pipeline
-		// TODO: Part 1g
 		vkDestroyBuffer(device, indexHandle, nullptr);
 		vkFreeMemory(device, indexData, nullptr);
-		// TODO: Part 2d
 		for (int i = 0; i < maxFrames; i++)
 		{
 			vkDestroyBuffer(device, uniformHandle[i], nullptr);
 			vkFreeMemory(device, uniformData[i], nullptr);
 		}
-
 		vkDestroyDescriptorPool(device, descriptor_pool, nullptr);
 		vkDestroyDescriptorSetLayout(device, descriptor_set_layout, nullptr);
-		// TODO: Part 3d
 		for (int i = 0; i < maxFrames; i++)
 		{
 			vkDestroyBuffer(device, storageHandle[i], nullptr);

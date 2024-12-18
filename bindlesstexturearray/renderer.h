@@ -96,7 +96,6 @@ class Renderer
 	GW::INPUT::GController controller;
 
 public:
-
 	Renderer(GW::SYSTEM::GWindow _win, GW::GRAPHICS::GVulkanSurface _vlk)
 	{
 		win = _win;
@@ -141,15 +140,10 @@ public:
 			CreateSampler(vlk, textureSamplers[i]);
 		}
 
-
 		// Set up the camera
+		CreateViewMatrix();
 		float aspect = 0.f;
 		vlk.GetAspectRatio(aspect);
-
-		viewMatrix = GW::MATH::GIdentityMatrixF;
-
-		GW::MATH::GMatrix::LookAtLHF(GW::MATH::GVECTORF{ -0.5f, 0.25f, 0.5f }, GW::MATH::GVECTORF{ 0, 0, 0 }, GW::MATH::GVECTORF{ 0, 1, 0 }, viewMatrix);
-
 		projectionMatrix = CreateProjectionMatrix(65.f, aspect, 0.1f, 100.f);
 
 		// Initialize the shader variables
@@ -157,8 +151,8 @@ public:
 		shaderVars.projectionMatrix = projectionMatrix;
 		shaderVars.worldMatrix = GW::MATH::GIdentityMatrixF;
 		shaderVars.sunDir = GW::MATH::GVECTORF{ -1.5f, -1, -2 };
-		shaderVars.camPos = GW::MATH::GVECTORF{ 0, 0, 0 };
 
+		// Create Proxies for Keyboard and Controller
 		input.Create(win);
 		controller.Create();
 
@@ -166,6 +160,13 @@ public:
 
 		InitializeGraphics();
 		BindShutdownCallback();
+	}
+
+	void CreateViewMatrix()
+	{
+		viewMatrix = GW::MATH::GIdentityMatrixF;
+		GW::MATH::GMatrix::LookAtLHF(GW::MATH::GVECTORF{ 0.5f, 0.25f, -0.5f }, GW::MATH::GVECTORF{ 0, 0, 0 }, GW::MATH::GVECTORF{ 0, 1, 0 }, viewMatrix);
+		shaderVars.camPos = GW::MATH::GVECTORF{ 0, 0, 0 };
 	}
 
 	void UpdateCamera()
@@ -218,7 +219,6 @@ public:
 
 		GW::MATH::GMatrix::TranslateLocalF(cameraMatrix, GW::MATH::GVECTORF{ Total_X_Change * PerFrameSpeed, 0, Total_Z_Change * PerFrameSpeed }, cameraMatrix);
 
-		// TODO: Part 4f
 		float fov = (65.f / 2.f) / 180.f;
 		unsigned int screen_height = 0;
 		float mouse_y_delta = 0;
@@ -244,7 +244,7 @@ public:
 		GW::MATH::GMATRIXF pitchMatrix;
 		GW::MATH::GMatrix::RotateXLocalF(GW::MATH::GIdentityMatrixF, total_pitch, pitchMatrix);
 		GW::MATH::GMatrix::MultiplyMatrixF(pitchMatrix, cameraMatrix, cameraMatrix);
-		// TODO: Part 4g
+
 		unsigned int screen_width;
 		win.GetClientWidth(screen_width);
 
@@ -260,10 +260,12 @@ public:
 		GW::MATH::GMatrix::InverseF(cameraMatrix, viewMatrix);
 		shaderVars.viewMatrix = viewMatrix;
 		shaderVars.camPos = cameraMatrix.row4;
+
+		projectionMatrix = CreateProjectionMatrix(65.f, static_cast<float>(ar), 0.1f, 100.f);
+		shaderVars.projectionMatrix = projectionMatrix;
 	}
 
 private:
-	// Creating a Projection Matrix Function
 	GW::MATH::GMATRIXF CreateProjectionMatrix(float fovInDeg, float aspect, float nearPlane, float farPlane)
 	{
 		GW::MATH::GMATRIXF projectionMatrix = GW::MATH::GIdentityMatrixF;
@@ -411,7 +413,6 @@ private:
 
 			// update descriptor set
 			vkUpdateDescriptorSets(device, 1, &writeDescriptorSet, 0, nullptr);
-
 		}
 
 		// update the texture descriptor set
@@ -440,14 +441,6 @@ private:
 
 	void InitializeGeometry()
 	{
-		//float verts[] = 
-		//{
-		//	0,   0.5f,
-		//	0.5f, -0.5f,
-		//	-0.5f, -0.5f
-		//};
-
-		//CreateVertexBuffer(&verts[0], sizeof(verts));
 
 		CreateGeometryBuffer(model.buffers[0].data.data(), sizeof(unsigned char) * model.buffers[0].data.size());
 	}
@@ -563,9 +556,7 @@ private:
 			Accessor& Accessor = model.accessors[model.meshes[0].primitives[0].attributes[attr[i]]];
 			BufferView& BufferView = model.bufferViews[Accessor.bufferView];
 
-			vertex_binding_description[i].binding = i;
-			vertex_binding_description[i].stride = Accessor.ByteStride(BufferView);
-			vertex_binding_description[i].inputRate = VK_VERTEX_INPUT_RATE_VERTEX;
+			vertex_binding_description[i] = CreateVkVertexInputBindingDescription(i, Accessor.ByteStride(BufferView));
 		}
 
 		VkVertexInputAttributeDescription vertex_attribute_description[4];
@@ -640,24 +631,14 @@ private:
 		return retval;
 	}
 
-	// DEPRECATED
-	//VkVertexInputBindingDescription* CreateVkVertexInputBindingDescription()
-	//{
-	//	VkVertexInputBindingDescription* retval = new VkVertexInputBindingDescription[4];
-	//	retval[0].binding = 0;
-	//	retval[0].stride = sizeof(float) * 3;
-	//	retval[0].inputRate = VK_VERTEX_INPUT_RATE_VERTEX;		
-	//	retval[1].binding = 1;
-	//	retval[1].stride = sizeof(float) * 2;
-	//	retval[1].inputRate = VK_VERTEX_INPUT_RATE_VERTEX;		
-	//	retval[2].binding = 2;
-	//	retval[2].stride = sizeof(float) * 3;
-	//	retval[2].inputRate = VK_VERTEX_INPUT_RATE_VERTEX;		
-	//	retval[3].binding = 3;
-	//	retval[3].stride = sizeof(float) * 4;
-	//	retval[3].inputRate = VK_VERTEX_INPUT_RATE_VERTEX;
-	//	return retval;
-	//}
+	VkVertexInputBindingDescription CreateVkVertexInputBindingDescription(uint32_t _binding, uint32_t _stride)
+	{
+		VkVertexInputBindingDescription retval = {};
+		retval.binding = _binding;
+		retval.stride = _stride;
+		retval.inputRate = VK_VERTEX_INPUT_RATE_VERTEX;
+		return retval;
+	}
 
 	VkPipelineVertexInputStateCreateInfo CreateVkPipelineVertexInputStateCreateInfo(
 		VkVertexInputBindingDescription* bindingDescriptions, uint32_t bindingCount,
