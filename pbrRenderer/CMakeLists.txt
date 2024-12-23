@@ -1,6 +1,6 @@
 cmake_minimum_required(VERSION 3.8)
 
-set(PROJECT_NAME pbrtextures)
+set(PROJECT_NAME pbrRenderer)
 project(${PROJECT_NAME})
 
 set_property(DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR} 
