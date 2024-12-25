@@ -172,12 +172,22 @@ private:
 		GetHandlesFromSurface();
 		InitializeVertexBuffer();
 
+		SetUpVkDescriptorSets();
+
+		CompileShaders();
+		InitializeGraphicsPipeline();
+	}
+
+	void SetUpVkDescriptorSets()
+	{
 		vlk.GetSwapchainImageCount(maxFrames);
 
+		// allocate memory for the uniform buffers
 		uniformHandle.resize(maxFrames);
 		uniformData.resize(maxFrames);
 		descriptorSets.resize(maxFrames);
 
+		// create the uniform buffers and write the data to them
 		for (int i = 0; i < maxFrames; i++)
 		{
 			GvkHelper::create_buffer(physicalDevice, device, sizeof(SHADER_VARS), VK_BUFFER_USAGE_UNIFORM_BUFFER_BIT,
@@ -186,6 +196,7 @@ private:
 			GvkHelper::write_to_buffer(device, uniformData[i], &shaderVars, sizeof(SHADER_VARS));
 		}
 
+		// create the descriptor pool and layout for the uniform buffers
 		VkDescriptorPoolSize descriptor_poolsize = {};
 		descriptor_poolsize.type = VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER;
 		descriptor_poolsize.descriptorCount = static_cast<uint32_t>(maxFrames);
@@ -214,6 +225,7 @@ private:
 
 		vkCreateDescriptorSetLayout(device, &descriptor_set_layout_info, nullptr, &descriptor_set_layout);
 
+		// allocate the descriptor sets and write the uniform buffer data to them
 		VkDescriptorSetAllocateInfo descriptor_set_allocateinfo = {};
 		descriptor_set_allocateinfo.sType = VK_STRUCTURE_TYPE_DESCRIPTOR_SET_ALLOCATE_INFO;
 		descriptor_set_allocateinfo.pSetLayouts = &descriptor_set_layout;
@@ -237,10 +249,6 @@ private:
 
 			vkUpdateDescriptorSets(device, 1, &write_descriptorset, 0, nullptr);
 		}
-
-
-		CompileShaders();
-		InitializeGraphicsPipeline();
 	}
 
 	void GetHandlesFromSurface()
@@ -715,6 +723,7 @@ public:
 		std::chrono::high_resolution_clock::time_point t2 = std::chrono::high_resolution_clock::now();
 		std::chrono::duration<float> time_span = std::chrono::duration_cast<std::chrono::duration<float>>(t2 - t1);
 
+		// declare a temporary camera Matrix that holds the real view matrix that is un inversed
 		GW::MATH::GMATRIXF cameraMatrix = GW::MATH::GIdentityMatrixF;
 		matrixMath.InverseF(viewMatrix, cameraMatrix);
 
@@ -766,6 +775,7 @@ public:
 
 		win.GetHeight(screen_height);
 
+		// prevents the camera from constantly rotating if we are not moving the camera
 		if (inputProxy.GetMouseDelta(mouse_x_delta = 0, mouse_y_delta = 0) 
 			!= GW::GReturn::SUCCESS)
 		{

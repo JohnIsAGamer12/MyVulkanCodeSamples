@@ -26,7 +26,7 @@ int main()
 	GVulkanSurface vulkan;
 	if (+win.Create(0, 0, 800, 600, GWindowStyle::WINDOWEDBORDERED))
 	{
-		win.SetWindowName("Jonathan Rivero - Vulkan - push_constants & multiple pipelines");
+		win.SetWindowName("Jonathan Rivero - Vulkan - push_constants");
 		VkClearValue clrAndDepth[2];
 		clrAndDepth[0].color = { { 0.25f, 0.25f, 0.25f, 1} };
 		clrAndDepth[1].depthStencil = { 1.0f, 0u };

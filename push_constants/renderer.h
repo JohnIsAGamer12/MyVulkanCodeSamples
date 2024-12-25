@@ -605,14 +605,8 @@ public:
 public:
 	void Render()
 	{
-		shaderData.worldMatrix = plusMatrix;
-
 		std::chrono::high_resolution_clock::time_point t1 = std::chrono::high_resolution_clock::now();
-		std::chrono::high_resolution_clock::time_point t2 = std::chrono::high_resolution_clock::now();
-
-		std::chrono::duration<float> time_delta = std::chrono::duration_cast<std::chrono::duration<float>>(t2 - t1);
-
-		matrixMath.RotateZLocalF(plusMatrix, time_delta.count() * 1000.0f, plusMatrix);
+		shaderData.worldMatrix = plusMatrix;
 
 		VkCommandBuffer commandBuffer = GetCurrentCommandBuffer();
 		SetUpPipeline(commandBuffer);
@@ -623,6 +617,13 @@ public:
 
 		vkCmdBindIndexBuffer(commandBuffer, indexHandle, 0, VK_INDEX_TYPE_UINT32);
 		vkCmdDrawIndexed(commandBuffer, 30, 1, 0, 0, 0); 
+
+		std::chrono::high_resolution_clock::time_point t2 = std::chrono::high_resolution_clock::now();
+		std::chrono::duration<double , std::milli > time_delta = std::chrono::duration_cast<std::chrono::duration<double, std::milli>>(t2 - t1);
+
+		float dt = (float)time_delta.count() / 1000.f;
+
+		matrixMath.RotateZLocalF(plusMatrix, dt, plusMatrix);
 	}
 
 private:
