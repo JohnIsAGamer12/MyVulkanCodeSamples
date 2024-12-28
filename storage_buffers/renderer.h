@@ -101,8 +101,8 @@ public:
 	{
 		GW::MATH::GMatrix::LookAtLHF(
 			GW::MATH::GVECTORF{ 0.75f, 0.25f, -1.5f },
-			GW::MATH::GVECTORF{ 0.15f, 0.75f, 0.f },
-			GW::MATH::GVECTORF{ 0, 1, 0 }, viewMatrix
+			GW::MATH::GVECTORF{ 0.15f, 0.75f,   0.f },
+			GW::MATH::GVECTORF{		0,	   1,     0 }, viewMatrix
 		);
 		shaderSceneData.viewMatrix = viewMatrix;
 		shaderSceneData.cameraPos = { 0.75f, 0.25f, -1.5f };
@@ -601,9 +601,9 @@ public:
 		GW::MATH::GMatrix::MultiplyMatrixF(RotateYMatrix, fSLogoMatrix, fSLogoMatrix);
 		perFrame[1].worldMatrix = fSLogoMatrix;
 
-		for (size_t i = 0; i < 2; i++)
+		for (size_t i = 0; i < static_cast<uint32_t>(maxFrames); i++)
 		{
-			GvkHelper::write_to_buffer(device, storageData[i], perFrame.data(), sizeof(INSTANCE_DATA) * 2);
+			GvkHelper::write_to_buffer(device, storageData[i], perFrame.data(), sizeof(INSTANCE_DATA) * perFrame.size());
 			// Update the shader scene data with the new projection matrices
 			GvkHelper::write_to_buffer(device, uniformData[i], &shaderSceneData, sizeof(SHADER_SCENE_DATA));
 		}

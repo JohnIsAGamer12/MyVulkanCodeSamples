@@ -3,7 +3,7 @@
 
 cbuffer SHADER_SCENE_DATA
 {
-    float4 lightDirection, lightAmbient, lightColor, cameraPos;
+    float4   lightDirection, lightAmbient, lightColor, cameraPos;
     float4x4 viewMatrix, projectionMatrix;
 };
 struct OBJ_ATTRIBUTES
@@ -21,7 +21,7 @@ struct OBJ_ATTRIBUTES
 };
 struct INSTANCE_DATA
 {
-    float4x4 worldMatrix;
+    float4x4       worldMatrix;
     OBJ_ATTRIBUTES material;
 };
 
@@ -29,10 +29,10 @@ StructuredBuffer<INSTANCE_DATA> DrawInfo : register(b1, space0);
 
 struct V_OUT
 {
-    float4 posH : SV_POSITION;
-    float3 posW : WORLD;
-    float3 uvW : UV;
-    float3 normW : NORMAL;
+    float4               posH  : SV_POSITION;
+    float3               posW  : WORLD;
+    float3               uvW   : UV;
+    float3               normW : NORMAL;
     nointerpolation uint index : INDEX;
 };
 

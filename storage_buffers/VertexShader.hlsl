@@ -38,10 +38,10 @@ StructuredBuffer<INSTANCE_DATA> DrawInfo : register(b1, space0);
 
 struct V_OUT
 {
-    float4 posH : SV_POSITION;
-    float3 posW : WORLD;
-    float3 uvW : UV;
-    float3 normW : NORMAL;
+    float4               posH  : SV_POSITION;
+    float3               posW  : WORLD;
+    float3               uvW   : UV;
+    float3               normW : NORMAL;
     nointerpolation uint index : INDEX;
 };
 
@@ -49,18 +49,17 @@ V_OUT main(_OBJ_VERT_ inputVertex,
             uint index : SV_InstanceID) 
 {
     V_OUT vOut; 
-    vOut.posH = float4(inputVertex.pos, 1);
+    vOut.posH  = float4(inputVertex.pos, 1);
     
-    vOut.posH = mul(vOut.posH, DrawInfo[index].worldMatrix);
+    vOut.posH  = mul(vOut.posH, DrawInfo[index].worldMatrix);
     vOut.index = index;
 
-    vOut.posW = vOut.posH;
+    vOut.posW  = vOut.posH;
     
-    vOut.uvW = inputVertex.uvw;
+    vOut.uvW   = inputVertex.uvw;
     vOut.normW = mul(float4(inputVertex.nrm, 0), DrawInfo[index].worldMatrix);
     
-    
-    vOut.posH = mul(vOut.posH, viewMatrix);
-    vOut.posH = mul(vOut.posH, projectionMatrix);
+    vOut.posH  = mul(vOut.posH, viewMatrix);
+    vOut.posH  = mul(vOut.posH, projectionMatrix);
     return vOut;
 }
