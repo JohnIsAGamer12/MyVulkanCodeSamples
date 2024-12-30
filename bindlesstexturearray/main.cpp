@@ -26,7 +26,7 @@ int main()
 	GWindow win;
 	GEventResponder msgs;
 	GVulkanSurface vulkan;
-	if (+win.Create(0, 0, 800, 600, GWindowStyle::WINDOWEDBORDERED))
+	if (+win.Create(0, 0, 1280, 720, GWindowStyle::WINDOWEDBORDERED))
 	{
 		win.SetWindowName("Jonathan Rivero - Vulkan - bindlesstexturearray");
 		VkClearValue clrAndDepth[2];

@@ -83,7 +83,7 @@ public:
 		win = _win;
 		vlk = _vlk;
 
-		bool ret = loader.LoadASCIIFromFile(&model, &err, &warn, "../Models/Doom_Sword.gltf");
+		bool ret = loader.LoadASCIIFromFile(&model, &err, &warn, "../../gltfModelLoader/Models/Doom_Sword.gltf");
 
 		if (!warn.empty())
 			printf("Warn %s\n", warn.c_str());
@@ -99,6 +99,13 @@ public:
 		vlk.GetAspectRatio(aspect);
 
 		viewMatrix = GW::MATH::GIdentityMatrixF;
+
+		GW::MATH::GMATRIXF translateMatrix;
+		// The Reason we don't negate it to set it backwards it's because the the view matrix get's inverse when we update the camera 
+		// based on the inputs from the user
+		GW::MATH::GMatrix::TranslateLocalF(GW::MATH::GIdentityMatrixF, GW::MATH::GVECTORF{0.f, 0.f, 0.5f}, translateMatrix);
+		GW::MATH::GMatrix::MultiplyMatrixF(translateMatrix, viewMatrix, viewMatrix);
+
 		projectionMatrix = CreateProjectionMatrix(65.f, aspect, 0.1f, 100.f);
 
 		// Initialize the shader variables
@@ -117,16 +124,11 @@ public:
 		BindShutdownCallback();
 	}
 
-	void UpdateCamera()
+	void UpdateCamera(float _deltaTime)
 	{
-		std::chrono::high_resolution_clock::time_point t1 = std::chrono::high_resolution_clock::now();
-		std::chrono::high_resolution_clock::time_point t2 = std::chrono::high_resolution_clock::now();
-		std::chrono::duration<float> time_span = std::chrono::duration_cast<std::chrono::duration<float>>(t2 - t1);
-
-		// TODO: Part 4c
 		GW::MATH::GMATRIXF cameraMatrix = GW::MATH::GIdentityMatrixF;
 		GW::MATH::GMatrix::InverseF(viewMatrix, cameraMatrix);
-		// TODO: Part 4d
+
 		float spaceInput = 0;
 		float lShiftInput = 0;
 		float rTriggerInput = 0;
@@ -140,11 +142,10 @@ public:
 
 		float Total_Y_Change = spaceInput - lShiftInput + rTriggerInput - lTriggerInput;
 
-		float newYValue = Total_Y_Change * Camera_Speed * time_span.count();
+		float newYValue = Total_Y_Change * Camera_Speed * _deltaTime;
 
 		cameraMatrix.row4.y += newYValue;
 
-		// TODO: Part 4e
 		float wInput = 0;
 		float aInput = 0;
 		float sInput = 0;
@@ -163,11 +164,10 @@ public:
 		float Total_Z_Change = wInput - sInput + lStickYInput;
 		float Total_X_Change = dInput - aInput + lStickXInput;
 
-		float PerFrameSpeed = Camera_Speed * time_span.count();
+		float PerFrameSpeed = Camera_Speed * _deltaTime;
 
 		GW::MATH::GMatrix::TranslateLocalF(cameraMatrix, GW::MATH::GVECTORF{ Total_X_Change * PerFrameSpeed, 0, Total_Z_Change * PerFrameSpeed }, cameraMatrix);
 
-		// TODO: Part 4f
 		float fov = (65.f / 2.f) / 180.f;
 		unsigned int screen_height = 0;
 		float mouse_y_delta = 0;
@@ -187,13 +187,13 @@ public:
 		controller.GetState(0, G_RY_AXIS, r_stick_y_axis);
 		controller.GetState(0, G_RX_AXIS, r_stick_x_axis);
 
-		float Thumb_Speed = G_PI * time_span.count();
+		float Thumb_Speed = G_PI * _deltaTime;
 		float total_pitch = fov * mouse_y_delta / static_cast<float>(screen_height) + r_stick_y_axis * -Thumb_Speed;
 
 		GW::MATH::GMATRIXF pitchMatrix;
 		GW::MATH::GMatrix::RotateXLocalF(GW::MATH::GIdentityMatrixF, total_pitch, pitchMatrix);
 		GW::MATH::GMatrix::MultiplyMatrixF(pitchMatrix, cameraMatrix, cameraMatrix);
-		// TODO: Part 4g
+
 		unsigned int screen_width;
 		win.GetClientWidth(screen_width);
 
@@ -209,6 +209,9 @@ public:
 		GW::MATH::GMatrix::InverseF(cameraMatrix, viewMatrix);
 		shaderVars.viewMatrix = viewMatrix;
 		shaderVars.camPos = cameraMatrix.row4;
+
+		projectionMatrix = CreateProjectionMatrix(65.f, ar, 0.1f, 100.f);
+		shaderVars.projectionMatrix = projectionMatrix;
 	}
 
 private:
@@ -334,15 +337,6 @@ private:
 
 	void InitializeGeometry()
 	{
-		//float verts[] = 
-		//{
-		//	0,   0.5f,
-		//	0.5f, -0.5f,
-		//	-0.5f, -0.5f
-		//};
-
-		//CreateVertexBuffer(&verts[0], sizeof(verts));
-
 		CreateGeometryBuffer(model.buffers[0].data.data(), sizeof(unsigned char) * model.buffers[0].data.size());
 	}
 
@@ -382,7 +376,7 @@ private:
 
 	void CompileVertexShader(const shaderc_compiler_t& compiler, const shaderc_compile_options_t& options)
 	{
-		std::string vertexShaderSource = ReadFileIntoString("../VertexShader.hlsl");
+		std::string vertexShaderSource = ReadFileIntoString("../../gltfModelLoader/VertexShader.hlsl");
 
 		shaderc_compilation_result_t result = shaderc_compile_into_spv( // compile
 			compiler, vertexShaderSource.c_str(), vertexShaderSource.length(),
@@ -403,7 +397,7 @@ private:
 
 	void CompilePixelShader(const shaderc_compiler_t& compiler, const shaderc_compile_options_t& options)
 	{
-		std::string fragmentShaderSource = ReadFileIntoString("../FragmentShader.hlsl");
+		std::string fragmentShaderSource = ReadFileIntoString("../../gltfModelLoader/FragmentShader.hlsl");
 
 		shaderc_compilation_result_t result;
 
@@ -533,25 +527,6 @@ private:
 		retval.primitiveRestartEnable = false;
 		return retval;
 	}
-
-	// DEPRECATED
-	//VkVertexInputBindingDescription* CreateVkVertexInputBindingDescription()
-	//{
-	//	VkVertexInputBindingDescription* retval = new VkVertexInputBindingDescription[4];
-	//	retval[0].binding = 0;
-	//	retval[0].stride = sizeof(float) * 3;
-	//	retval[0].inputRate = VK_VERTEX_INPUT_RATE_VERTEX;		
-	//	retval[1].binding = 1;
-	//	retval[1].stride = sizeof(float) * 2;
-	//	retval[1].inputRate = VK_VERTEX_INPUT_RATE_VERTEX;		
-	//	retval[2].binding = 2;
-	//	retval[2].stride = sizeof(float) * 3;
-	//	retval[2].inputRate = VK_VERTEX_INPUT_RATE_VERTEX;		
-	//	retval[3].binding = 3;
-	//	retval[3].stride = sizeof(float) * 4;
-	//	retval[3].inputRate = VK_VERTEX_INPUT_RATE_VERTEX;
-	//	return retval;
-	//}
 
 	VkPipelineVertexInputStateCreateInfo CreateVkPipelineVertexInputStateCreateInfo(
 		VkVertexInputBindingDescription* bindingDescriptions, uint32_t bindingCount,
@@ -711,8 +686,6 @@ public:
 	{
 		VkCommandBuffer commandBuffer = GetCurrentCommandBuffer();
 		SetUpPipeline(commandBuffer);
-
-		// vkCmdDraw(commandBuffer, 3, 1, 0, 0);
 
 		// write to the uniform buffer
 		for (int i = 0; i < maxFrames; i++)

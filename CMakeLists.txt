@@ -16,6 +16,7 @@ project ("MyVulkanCodeSamples")
 
 # Include sub-projects.
 add_subdirectory("push_constants")
+add_subdirectory("gltfModelLoader")
 add_subdirectory("2D_Starfield")
 add_subdirectory("bindlesstexturearray")
 add_subdirectory("pbrRenderer")

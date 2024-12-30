@@ -27,19 +27,13 @@ int main()
 	GWindow win;
 	GEventResponder msgs;
 	GVulkanSurface vulkan;
-	if (+win.Create(0, 0, 800, 600, GWindowStyle::WINDOWEDBORDERED))
+	if (+win.Create(0, 0, 1280, 720, GWindowStyle::WINDOWEDBORDERED))
 	{
 		// win.SetIcon(16, 16, nullptr);
-		win.SetWindowName("Jonathan Rivero Lab 5 - Part Four Complete");
+		win.SetWindowName("Jonathan Rivero Vulkan - gltfModelLoader");
 		VkClearValue clrAndDepth[2];
 		clrAndDepth[0].color = { {0.75f, 0, 0, 1} };
 		clrAndDepth[1].depthStencil = { 1.0f, 0u };
-		//msgs.Create([&](const GW::GEvent& e) {
-		//	GW::SYSTEM::GWindow::Events q;
-		//	if (+e.Read(q) && q == GWindow::Events::RESIZE)
-		//		clrAndDepth[0].color.float32[2] += 0.01f; // disable
-		//	});
-		//win.Register(msgs);
 #ifndef NDEBUG
 		const char* debugLayers[] = {
 			"VK_LAYER_KHRONOS_validation", // standard validation layer
@@ -57,7 +51,13 @@ int main()
 			{
 				if (+vulkan.StartFrame(2, clrAndDepth))
 				{
-					renderer.UpdateCamera();
+					std::chrono::high_resolution_clock::time_point t1 = std::chrono::high_resolution_clock::now();
+					std::chrono::high_resolution_clock::time_point t2 = std::chrono::high_resolution_clock::now();
+
+					std::chrono::duration<float, std::milli> time_span = std::chrono::duration_cast<std::chrono::duration<float, std::milli>>(t2 - t1);
+
+					float dt = time_span.count() / 1000.f;
+					renderer.UpdateCamera(dt);
 
 					renderer.Render();
 					vulkan.EndFrame(true);
