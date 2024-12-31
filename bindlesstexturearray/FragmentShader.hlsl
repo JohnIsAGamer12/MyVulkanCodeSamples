@@ -3,17 +3,17 @@
 
 static float4 specular = { 1, 1, 1, 1};
 static float4 sunColor = { 0.9f, 0.9f, 1, 1 };
-static float4 ambient = { 0.1f, 0.1f, 0.1f, 1};
+static float4 ambient  = { 0.1f, 0.1f, 0.1f, 1};
 static float4 emissive = { 0, 0, 0, 1 };
-static float Ns = 100;
+static float  Ns       = 100;
 
 struct OUT_V
 {
-    float4 pos : SV_POSITION;
+    float4 pos  : SV_POSITION;
     float4 posW : WORLD;
-    float2 uv : TEXTCOORD;
-    float3 nrm : NRM;
-    float4 tan : TAN;
+    float2 uv   : TEXTCOORD;
+    float3 nrm  : NRM;
+    float4 tan  : TAN;
 };
 
 cbuffer SHADER_VARS : register(b0, space0)
@@ -25,7 +25,7 @@ cbuffer SHADER_VARS : register(b0, space0)
     float4 camPos;
 };
 
-Texture2D textures[] : register(t0, space1);
+Texture2D    textures[] : register(t0, space1);
 SamplerState samplers[] : register(s0, space1);
 
 float4 main(OUT_V inputVert) : SV_TARGET
@@ -39,7 +39,7 @@ float4 main(OUT_V inputVert) : SV_TARGET
     float roughness = roughnessMettalic.y;
     
     float3 normal = mul(float4(inputVert.nrm, 1), world);
-    float lightRatio = dot(-lightDir, normal);
+    float  lightRatio = dot(-lightDir, normal);
     
     float3 viewDir = normalize(camPos.xyz - inputVert.posW.xyz);
     
