@@ -30,7 +30,7 @@ int main()
 	if (+win.Create(0, 0, 1280, 720, GWindowStyle::WINDOWEDBORDERED))
 	{
 		// win.SetIcon(16, 16, nullptr);
-		win.SetWindowName("Jonathan Rivero Vulkan - gltfModelLoader");
+		win.SetWindowName("Jonathan Rivero - Vulkan - gltfModelLoader");
 		VkClearValue clrAndDepth[2];
 		clrAndDepth[0].color = { {0.75f, 0, 0, 1} };
 		clrAndDepth[1].depthStencil = { 1.0f, 0u };

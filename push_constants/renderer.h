@@ -585,6 +585,7 @@ public:
 
 	void CreatePipelineLayout()
 	{
+		// Initialize VkPushConstantRange
 		VkPushConstantRange push_constants = {};
 		push_constants.offset = 0;
 		push_constants.size = sizeof(SHADER_VARS);
@@ -595,8 +596,8 @@ public:
 		pipeline_layout_create_info.sType = VK_STRUCTURE_TYPE_PIPELINE_LAYOUT_CREATE_INFO;
 		pipeline_layout_create_info.setLayoutCount = 0;
 		pipeline_layout_create_info.pSetLayouts = VK_NULL_HANDLE;
-		pipeline_layout_create_info.pushConstantRangeCount = 1; 
-		pipeline_layout_create_info.pPushConstantRanges = &push_constants; 
+		pipeline_layout_create_info.pushConstantRangeCount = 1; // Tells Us How Many VkPushConstantRange do we have
+		pipeline_layout_create_info.pPushConstantRanges = &push_constants; // The address of where the VkPushConstantRange is located
 		vkCreatePipelineLayout(device, &pipeline_layout_create_info,
 			nullptr, &pipelineLayout);
 	}
