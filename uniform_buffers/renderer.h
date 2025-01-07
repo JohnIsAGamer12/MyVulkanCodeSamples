@@ -105,7 +105,10 @@ public:
 	void CreateViewMatrix()
 	{
 		viewMatrix = GW::MATH::GIdentityMatrixF;
-		matrixMath.LookAtLHF(GW::MATH::GVECTORF{ 0.25f, -0.125f, -0.25f, 1.f }, GW::MATH::GVECTORF{ 0, 0, 0 }, GW::MATH::GVECTORF{0, 1, 0}, viewMatrix);
+		matrixMath.LookAtLHF(GW::MATH::GVECTORF{ 0.25f, -0.125f, -0.25f, 1.f }, 
+							 GW::MATH::GVECTORF{ 0, 0, 0 }, 
+							 GW::MATH::GVECTORF{0, 1, 0}, viewMatrix
+							);
 	}
 
 	void CreateCubeGridMatrix()
