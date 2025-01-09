@@ -42,6 +42,5 @@ OUT_V main( float3 inputVertex : POSITION,
     vOut.uv = inputUV;
     vOut.tan = mul(inputTangent, instanceData[0].world);
     
-    
     return vOut;
 }

@@ -49,14 +49,15 @@ float4 main(OUT_V inputVert) : SV_TARGET
     
     float4 binormal = mul(float4(cross(normal, tangent.xyz), 0.0f), instanceData[0].world);
     
-    float3x3 TBN = { tangent.xyz, binormal.xyz, normal.xyz };
-    
     float4 normalMap = textures[2].Sample(samplers[2], inputVert.uv);
     
+    // invert green channel for accurate normal maps
     normalMap.g = 1.0f - normalMap.g;
     
     // scale normalMap by 2
     normalMap = normalize((normalMap * 2) - 1.0f);
+    
+    float3x3 TBN = { tangent.xyz, binormal.xyz, normal.xyz };
     
     float3 newNormal = normalize(mul(normalMap.xyz, TBN));
     
