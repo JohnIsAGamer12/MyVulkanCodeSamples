@@ -71,10 +71,18 @@ include_directories(${CMAKE_SOURCE_DIR}/ktx/include)
 
 if (WIN32)
 	# Find the libraries
-	find_library(KTX_LIB_D NAMES ktx_x64_d PATHS ${CMAKE_SOURCE_DIR}/ktx/lib)
-	find_library(KTX_LIB_R NAMES ktx_x64_r PATHS ${CMAKE_SOURCE_DIR}/ktx/lib)
-	
+	find_library(KTX_LIB_D NAMES ktxd PATHS ${CMAKE_SOURCE_DIR}/ktx/lib)
+	find_library(KTX_LIB_R NAMES ktx PATHS ${CMAKE_SOURCE_DIR}/ktx/lib)
+
 	# Link the libraries
 	target_link_libraries(${PROJECT_NAME} debug ${KTX_LIB_D} optimized ${KTX_LIB_R})
 endif(WIN32)
+
+if (WIN32)
+    add_custom_command(TARGET ${PROJECT_NAME} POST_BUILD
+        COMMAND ${CMAKE_COMMAND} -E copy_if_different
+        "${CMAKE_SOURCE_DIR}/ktx/bin/ktx.dll"
+        $<TARGET_FILE_DIR:${PROJECT_NAME}>
+    )
+endif()
 
