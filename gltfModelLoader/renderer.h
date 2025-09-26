@@ -337,7 +337,10 @@ private:
 
 	void InitializeGeometry()
 	{
-		CreateGeometryBuffer(model.buffers[0].data.data(), sizeof(unsigned char) * model.buffers[0].data.size());
+		auto* geometryBufData = model.buffers[0].data.data();
+		size_t geometryBufSize = sizeof(unsigned char) * model.buffers[0].data.size();
+
+		CreateGeometryBuffer(geometryBufData, geometryBufSize);
 	}
 
 	void CreateGeometryBuffer(const void* data, unsigned int sizeInBytes)
